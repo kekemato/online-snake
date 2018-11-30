@@ -15,7 +15,7 @@ class Snake extends React.Component {
         return (
             <div>
                 <GameBoard
-                    gameBoard={this.state.gameBoard}
+                    gameBoard={gameBoard}
                 />
             </div>
         )
