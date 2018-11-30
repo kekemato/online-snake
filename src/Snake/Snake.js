@@ -1,4 +1,5 @@
 import React from 'react'
+import GameBoard from './GameBoard'
 
 class Snake extends React.Component {
     state = {
@@ -13,19 +14,9 @@ class Snake extends React.Component {
 
         return (
             <div>
-                {
-                    gameBoard.map(row => (
-                        <div>
-                            {
-                                row.map(cell => (
-                                    <div>
-                                        {cell}
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    ))
-                }
+                <GameBoard
+                    gameBoard={this.state.gameBoard}
+                />
             </div>
         )
     }
