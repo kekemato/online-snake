@@ -10,6 +10,7 @@ class Snake extends React.Component {
         this.currentGameBoard = null
         this.currentPlayerIndex = 0
         this.direction = 'right'
+        this.matchId = null
 
         this.state = {
             gameBoard: Array(props.boardDimension)
@@ -31,7 +32,27 @@ class Snake extends React.Component {
         }
     }
 
+    checkIfIsInTheMatch = () => {
+        if (window.location.hash) {
+            this.matchId = window.location.hash
+            this.currentPlayerIndex = 1
+        } else {
+            this.startNewMatch()
+        }
+    }
+
+    startNewMatch = () => {
+        const newRef = this.props.firebaseDatabase.ref('snake-multi').push(
+            this.state)
+
+        this.matchId = newRef.key
+        window.location.hash = newRef.key
+        this.currentPlayerIndex = 0
+    }
+
     componentDidMount() {
+        this.checkIfIsInTheMatch()
+
         this.intervalId = setInterval(
             this.gameTick,
             this.state.gameTickTime
