@@ -2,10 +2,12 @@ import React from 'react'
 import GameRow from './GameRow'
 
 const style = {
-    width: "100%",
+    width: "100wv",
     maxWidth: "700px",
+    height: "100vw",
+    maxHeight: "700px",
     margin: "0 auto",
-    backgroundColor: "red"
+    border: "1px solid black"
 }
 
 const GameBoard = props => (
@@ -14,11 +16,9 @@ const GameBoard = props => (
         {
 
             props.gameBoard.map(row => (
-                <div>
-                    <GameRow
-                        row={row}
-                    />
-                </div>
+                <GameRow
+                    row={row}
+                />
             ))
         }
     </div>
