@@ -8,29 +8,27 @@ class Snake extends React.Component {
         const halfBoardDimension = Math.ceil(props.boardDimension / 2) - 1
         this.intervalId = null
         this.currentGameBoard = null
+        this.currentPlayerIndex= 0
+        this.direction ='right'
 
-        this.state = {
-            gameBoard: Array(props.boardDimension)
-                .fill(
-                    Array(props.boardDimension).fill(1)
-                ),
-            snakes: [
-                [
-                    { x: halfBoardDimension + 2, y: halfBoardDimension },
-                    { x: halfBoardDimension + 1, y: halfBoardDimension }
+            this.state = {
+                gameBoard: Array(props.boardDimension)
+                    .fill(
+                        Array(props.boardDimension).fill(1)
+                    ),
+                snakes: [
+                    [
+                        { x: halfBoardDimension + 2, y: halfBoardDimension },
+                        { x: halfBoardDimension + 1, y: halfBoardDimension }
+                    ],
+                    [
+                        { x: halfBoardDimension - 2, y: halfBoardDimension },
+                        { x: halfBoardDimension - 1, y: halfBoardDimension }
+                    ]
                 ],
-                [
-                    { x: halfBoardDimension - 2, y: halfBoardDimension },
-                    { x: halfBoardDimension - 1, y: halfBoardDimension }
-                ]
-            ],
-            directions: [
-                'right',
-                'left'
-            ],
-            meals: [],
-            gameTickTime: 1000
-        }
+                meals: [],
+                gameTickTime: 1000,
+            }
     }
 
     componentDidMount() {
@@ -38,61 +36,94 @@ class Snake extends React.Component {
             this.gameTick,
             this.state.gameTickTime
         )
+        window.addEventListener(
+            'keydown',
+            this.onArrowKeyDown
+        )
     }
 
     componentWillUnmount() {
         clearInterval(this.intervalId)
+        window.removeEventListener(
+            'keydown',
+            this.onArrowKeyDown
+        )
     }
 
     gameTick = () => {
-        console.log('tick')
         this.checkIfMovesAreAvailable()
     }
 
     checkIfMovesAreAvailable = () => {
-        this.state.snakes.forEach((snakePosition, snakeIndex) => {
-            const snakeHeadPosition = snakePosition[0]
-            const direction = this.state.directions[snakeIndex]
-            let newSnakeHeadPosition = null
-            switch (direction) {
-                case 'left':
-                    newSnakeHeadPosition = {
-                        x: snakeHeadPosition.x - 1,
-                        y: snakeHeadPosition.y
-                    }
-                    break
-                case 'right':
-                    newSnakeHeadPosition = {
-                        x: snakeHeadPosition.x + 1,
-                        y: snakeHeadPosition.y
-                    }
-                    break
-                case 'top':
-                    newSnakeHeadPosition = {
-                        x: snakeHeadPosition.x,
-                        y: snakeHeadPosition.y - 1
-                    }
-                    break
-                case 'bottom':
-                    newSnakeHeadPosition = {
-                        x: snakeHeadPosition.x,
-                        y: snakeHeadPosition.y + 1
-                    }
-                    break
-            }
-            if (
-                this.currentGameBoard[newSnakeHeadPosition.y] &&
-                this.currentGameBoard[newSnakeHeadPosition.y][newSnakeHeadPosition.x]
-            ) {
-                this.moveSnake(snakeIndex, newSnakeHeadPosition)
-            } else {
-                this.endGame(snakeIndex)
-            }
+        const snakeHeadPosition = this.state.snakes[this.currentPlayerIndex][0]
+        let newSnakeHeadPosition = null
+        switch (this.direction) {
+            case 'left':
+                newSnakeHeadPosition = {
+                    x: snakeHeadPosition.x - 1,
+                    y: snakeHeadPosition.y
+                }
+                break
+            case 'right':
+                newSnakeHeadPosition = {
+                    x: snakeHeadPosition.x + 1,
+                    y: snakeHeadPosition.y
+                }
+                break
+            case 'up':
+                newSnakeHeadPosition = {
+                    x: snakeHeadPosition.x,
+                    y: snakeHeadPosition.y - 1
+                }
+                break
+            case 'bottom':
+                newSnakeHeadPosition = {
+                    x: snakeHeadPosition.x,
+                    y: snakeHeadPosition.y + 1
+                }
+                break
+            default:
+        }
+        if (
+            this.currentGameBoard[newSnakeHeadPosition.y] &&
+            this.currentGameBoard[newSnakeHeadPosition.y][newSnakeHeadPosition.x]
+        ) {
+            this.moveSnake(newSnakeHeadPosition)
+        } else {
+            this.endGame()
+        }
+    }
+
+    moveSnake = (newSnakeHeadPosition) => {
+        const snake = this.state.snakes[this.currentPlayerIndex]
+        const snakeWithoutTail = snake.slice(0, -1)
+        const snakeWithNewHead = [newSnakeHeadPosition].concat(snakeWithoutTail)
+
+        const newSnakes = this.state.snakes.map((snake, i) => (
+            this.currentPlayerIndex === i ?
+                snakeWithNewHead
+                :
+                snake
+        ))
+
+        this.setState({
+            snakes: newSnakes
         })
     }
 
-    moveSnake = () => {
+    endGame = () => {
+        alert('LOST!')
+    }
 
+    onArrowKeyDown = event => {
+        switch (event.key) {
+            case 'ArrowLeft':
+            case 'ArrowRight':
+            case 'ArrowUp':
+            case 'ArrowDown':
+            default:
+        }
+        // this.setState({direction: event})
     }
 
     composeGameBoard = () => {
